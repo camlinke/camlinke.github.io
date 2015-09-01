@@ -1,33 +1,32 @@
 ---
-layout: default
-title: Home
+layout: page
+title: 
 ---
+<ul id="icons">
+    <li><a href="http://twitter.com/camlinke"><i class="fa fa-twitter"></i></a></li>
+    <li><a href="http://linked.com/in/camlinke"><i class="fa fa-linkedin"></i></a></li>
+    <li><a href="http://github.com/camlinke"><i class="fa fa-github-alt"></i></a></li>
+    <li><a href="http://angel.co/camlinke"><i class="fa fa-angellist"></i></a></li>
+    <li><a href="http://facebook.com/camlinke"><i class="fa fa-facebook"></i></a></li>
+    <li><a href="http://medium.com/camlinke"><i class="fa fa-medium"></i></a></li>
+    <li><a href="mailto:cam.linke@gmail.com"><i class="fa fa-envelope"></i></a></li>
+</ul>
+<p>
+  Cam is a software entrepreneur and product manager. The past few years he's worked helping to grow Edmonton's emerging creative and tech economy by connecting entrepreneurs, investors, developers and creative minds through Startup Edmonton. In 2008, Cam formed DemoCamp Edmonton as a forum to bring the Edmonton tech community together, and has continued that with his work at Startup Edmonton and Flightpath. In the past he was the Product Manager at Nexopia.com and currently runs Touch Metric, makers of in-person survey software. He was named one of Avenue Magazine's 2011 Top 40 Under 40 in recognition of his work in Edmonton's tech and startup community.
+</p>
 
-<div class="posts">
-  {% for post in paginator.posts %}
-  <article class="post">
-    <h1 class="post-title">
-      <a href="{{ site.baseurl }}{{ post.url }}">
-        {{ post.title }}
-      </a>
-    </h1>
+<h3>Work</h3>
+<p><a href="http://startupedmonton.com">Startup Edmonton</a> - In 2009 I founded Startup Edmonton with Ken Bautista to help build the startup community in Edmonton. What started as a side project for us has grown into a full fledged non-profit with 14,000 sq/ft of space in downtown Edmonton, hundreds of events, meetups, hackathons, and an incredible growing community and thriving startup ecosystem.</p>
+<p><a href="http://flightpathventures.com">Flightpath Ventures</a> - Flightpath Ventures is an angel stage fund based in Edmonton. We invest in software/internet companies and work to help them grow from initial prototype to traction and funding.</p>
+<p><a href="http://touchmetric.com">Touch Metric</a> - Touch Metric makes in-person survey software. While most face to face surveys still get recoreded using a clipboard our app, Surveyor, allows information to be collected on an iOS device giving customers instant access to their digitized data. We've been used by clients all over the world ranging from door-knocking in political campaigns, to intercept surveys in Fortune 500 retail stores.</p>
+<p><a href="http://aicml.ca">AICML</a> - This last year I ws invited to join the board of the Alberta Ingenuity Centre for Machine Learning (AICML). A world renowned centre, with an incredible team of researches and students, I'm excited to join the board and help out however I can.</p>
 
-    <time datetime="{{ post.date | date_to_xmlschema }}" class="post-date">{{ post.date | date_to_string }}</time>
+<h3>Writing</h3>
 
-    {{ post.content }}
-  </article>
-  {% endfor %}
-</div>
+<h3>Projects</h3>
 
-<div class="pagination">
-  {% if paginator.next_page %}
-    <a class="pagination-item older" href="{{ paginator.next_page_path | prepend: site.baseurl }}">Older</a>
-  {% else %}
-    <span class="pagination-item older">Older</span>
-  {% endif %}
-  {% if paginator.previous_page %}
-    <a class="pagination-item newer" href="{{ paginator.previous_page_path | prepend: site.baseurl }}">Newer</a>
-  {% else %}
-    <span class="pagination-item newer">Newer</span>
-  {% endif %}
-</div>
+<h3>Recent Courses</h3>
+
+<h3>Recent Reading</h3>
+
+<h3>Other Articles</h3>

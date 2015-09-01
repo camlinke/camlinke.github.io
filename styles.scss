@@ -26,3 +26,18 @@
 @import "posts";
 @import "pagination";
 @import "message";
+
+
+
+#icons {
+    padding-left: 0px;
+}
+
+#icons li {
+    display: inline;
+    padding-right: 4px;
+}
+
+#icons li a {
+    color: #515151;
+}
