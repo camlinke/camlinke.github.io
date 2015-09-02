@@ -19,4 +19,9 @@
     li {
         list-style: none;
     }
+
+    &.descriptive li {
+        margin-bottom: 8px;
+    }
 }
+
