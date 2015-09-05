@@ -27,6 +27,7 @@ title: Reading
     <li>The Hard Thing About Hard Things</li>
     <li>Zero to One</li>
     <li>Bicoin for the Befuddled</li>
+    <li>Swift by Tutorial</li>
     <li>Creativity Inc.</li>
     <li>Zero to One</li>
     <li>Flash Boys</li>
@@ -38,6 +39,7 @@ title: Reading
 
 <h3>2014</h3>
 <ul class="frontpage-list">
+    <li>Idiomatic Python</li>
     <li>Microinteractions</li>
     <li>So Good They Can't Ignore You</li>
     <li>How to Fail at Almost Everything and Still Succeed</li>
@@ -57,4 +59,6 @@ title: Reading
     <li>Creative Destruction of Medicine</li>
     <li>The New Cool</li>
     <li>Makers</li>
+    <li>Rails Tutorial</li>
+    <li>Data Smart</li>
 </ul>
