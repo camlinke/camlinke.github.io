@@ -30,7 +30,6 @@ title: Reading
     <li>Bicoin for the Befuddled</li>
     <li>Swift by Tutorial</li>
     <li>Creativity Inc.</li>
-    <li>Zero to One</li>
     <li>Flash Boys</li>
     <li>The Everything Store</li>
     <li>The Year Without Pants</li>
