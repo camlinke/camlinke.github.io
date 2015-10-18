@@ -12,6 +12,7 @@ title: Reading
     <li>The Turing Exception</li>
     <li>Data Jujitsu</li>
     <li>Inspired: How To Create Products Customers Love</li>
+    <li>Vanishing Games</li>
     <li>The Effective Engineer</li>
     <li>The Martian</li>
     <li>Building Multicopter Video Drones</li>
@@ -20,7 +21,6 @@ title: Reading
     <li>Crux</li>
     <li>Surely You're Joking Mr. Feynman!</li>
     <li>Learn Python Design Patterns</li>
-    <li>Nexus</li>
     <li>Smartcuts</li>
     <li>Countdown to Zero Day</li>
     <li>Flask Web Development</li> <!-- http://shop.oreilly.com/product/0636920031116.do -->
@@ -33,6 +33,7 @@ title: Reading
     <li>Creativity Inc.</li>
     <li>Flash Boys</li>
     <li>The Everything Store</li>
+    <li>Nexus</li>
     <li>The Year Without Pants</li>
     <li>Ghostman</li>
     <li>A Mind for Numbers</li>
