@@ -63,4 +63,5 @@ title: Reading
     <li>Makers</li>
     <li>Rails Tutorial</li>
     <li>Data Smart</li>
+    <li>Real Python Web Development</li>
 </ul>
