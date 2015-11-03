@@ -10,6 +10,7 @@ title: Courses
     <li><a href="https://www.udacity.com/course/intro-to-machine-learning--ud120">Introduction to Machine Learning (Udacity 120)</a></li>
     <li><a href="https://www.udacity.com/course/intro-to-data-science--ud359">Introduction to Data Science (Udacity 359)</a></li>
     <li><a href="https://www.edx.org/course/linear-algebra-foundations-frontiers-utaustinx-ut-5-03x">LAFF - Linear Algebra Foundations and Frontiers (EDx)</a></li>
+    <li><a href="https://www.bitfountain.io/">WatchKit Foundations (Bitfountain)</a></li>
     <li><a href="https://www.bitfountain.io/">iOS 8 Foundations (Bitfountain)</a></li>
     <li>Incomplete...</li>
 </ul>
