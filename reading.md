@@ -5,6 +5,7 @@ title: Reading
 
 <h3>2015</h3>
 <ul class="frontpage-list">
+    <li>Apex (Nexus Book 3)</li>
     <li>Well Designed</li>
     <li>How Google Works</li>
     <li>Badass: Making Users Awesome</li>
@@ -18,7 +19,7 @@ title: Reading
     <li>Building Multicopter Video Drones</li>
     <li>Darknet</li>
     <li>Becomming Steve Jobs</li>
-    <li>Crux</li>
+    <li>Crux (Nexus Book 2)</li>
     <li>Surely You're Joking Mr. Feynman!</li>
     <li>Learn Python Design Patterns</li>
     <li>Smartcuts</li>
