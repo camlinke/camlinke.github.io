@@ -5,6 +5,8 @@ title: Reading
 
 <h3>2015</h3>
 <ul class="frontpage-list">
+    <li>The Big Short</li>
+    <li>Elon Musk</li>
     <li>Apex (Nexus Book 3)</li>
     <li>Well Designed</li>
     <li>How Google Works</li>
