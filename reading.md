@@ -5,6 +5,8 @@ title: Reading
 
 <h3>2016</h3>
 <ul class="frontpage-list">
+    <li>Intercom on Product Management</li>
+    <li>Leviathan Wakes</li>
     <li>Deep Work</li>
     <li>The Big Short</li>
     <li>Elon Musk</li>
