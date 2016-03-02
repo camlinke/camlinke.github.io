@@ -5,6 +5,7 @@ title: Reading
 
 <h3>2016</h3>
 <ul class="frontpage-list">
+    <li>The Achievement Habit</li>
     <li>Intercom on Product Management</li>
     <li>Leviathan Wakes</li>
     <li>Deep Work</li>
