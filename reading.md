@@ -5,6 +5,8 @@ title: Reading
 
 <h3>2016</h3>
 <ul class="frontpage-list">
+    <li>Why? A Guide to Finding and Using Causes</li>
+    <li>Humans Are Underrated</li>
     <li>The Achievement Habit</li>
     <li>Intercom on Product Management</li>
     <li>Leviathan Wakes</li>
