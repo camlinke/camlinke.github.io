@@ -5,6 +5,7 @@ title: Courses
 
 <h3>2016</h3>
 <ul class="frontpage-list">
+    <li><a href="https://www.coursera.org/learn/ml-classification">Machine Learning: Classification (Coursera)</a></li>
     <li><a href="https://www.coursera.org/learn/ml-regression">Machine Learning: Regression (Coursera)</a></li>
 </ul>
 

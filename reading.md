@@ -5,6 +5,9 @@ title: Reading
 
 <h3>2016</h3>
 <ul class="frontpage-list">
+    <li>The Signal and the Noise</li>
+    <li>Agile Product Management with Scrum</li>
+    <li>Rise of the Robots</li>
     <li>Why? A Guide to Finding and Using Causes</li>
     <li>Humans Are Underrated</li>
     <li>The Achievement Habit</li>
