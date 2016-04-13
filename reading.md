@@ -5,6 +5,8 @@ title: Reading
 
 <h3>2016</h3>
 <ul class="frontpage-list">
+    <li>The Future of Machine Intelligence</li>
+    <li>Zeroes</li>
     <li>The Signal and the Noise</li>
     <li>Agile Product Management with Scrum</li>
     <li>Rise of the Robots</li>
