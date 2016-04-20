@@ -5,6 +5,7 @@ title: Reading
 
 <h3>2016</h3>
 <ul class="frontpage-list">
+    <li>The Third Wave</li>
     <li>The Future of Machine Intelligence</li>
     <li>Zeroes</li>
     <li>The Signal and the Noise</li>
