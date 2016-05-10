@@ -5,11 +5,14 @@ title: Reading
 
 <h3>2016</h3>
 <ul class="frontpage-list">
+    <li>Platform Revolution</li>
+    <li>Peak: How to Master Almost Anything</li>
+    <li>Long Story Short</li>
     <li>The Third Wave</li>
     <li>The Future of Machine Intelligence</li>
+    <li>Agile Product Management with Scrum</li>
     <li>Zeroes</li>
     <li>The Signal and the Noise</li>
-    <li>Agile Product Management with Scrum</li>
     <li>Rise of the Robots</li>
     <li>Why? A Guide to Finding and Using Causes</li>
     <li>Humans Are Underrated</li>
