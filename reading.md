@@ -5,6 +5,8 @@ title: Reading
 
 <h3>2016</h3>
 <ul class="frontpage-list">
+    <li>The Best Interface is No Interface</li>
+    <li>Caliban's War</li>
     <li>Platform Revolution</li>
     <li>Peak: How to Master Almost Anything</li>
     <li>Long Story Short</li>
