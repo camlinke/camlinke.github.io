@@ -5,6 +5,10 @@ title: Reading
 
 <h3>2016</h3>
 <ul class="frontpage-list">
+    <li>Scrum: A Breathtakingly Brief and Agile Introduction</li>
+    <li>Abbadon's Gate</li>
+    <li>Charlie Munger</li>
+    <li>Born for This</li>
     <li>The Best Interface is No Interface</li>
     <li>Caliban's War</li>
     <li>Platform Revolution</li>
@@ -17,12 +21,14 @@ title: Reading
     <li>The Signal and the Noise</li>
     <li>Rise of the Robots</li>
     <li>Why? A Guide to Finding and Using Causes</li>
+    <li>The Practitioner's Guide to Product Management</li>
     <li>Humans Are Underrated</li>
     <li>The Achievement Habit</li>
     <li>Intercom on Product Management</li>
     <li>Leviathan Wakes</li>
     <li>Deep Work</li>
     <li>The Big Short</li>
+    <li>The Prooduct Manager's Handbook</li>
     <li>Elon Musk</li>
 </ul>
 
