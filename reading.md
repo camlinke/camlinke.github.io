@@ -5,6 +5,8 @@ title: Reading
 
 <h3>2016</h3>
 <ul class="frontpage-list">
+    <li>The Productivity Project</li>
+    <li>Lean Analytics</li>
     <li>Scrum: A Breathtakingly Brief and Agile Introduction</li>
     <li>Abbadon's Gate</li>
     <li>Charlie Munger</li>
