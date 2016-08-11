@@ -5,6 +5,7 @@ title: Reading
 
 <h3>2016</h3>
 <ul class="frontpage-list">
+    <li>Sprint</li>
     <li>Chaos Monkeys</li>
     <li>Cibola Burn</li>
     <li>The Productivity Project</li>
