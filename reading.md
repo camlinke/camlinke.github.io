@@ -5,6 +5,9 @@ title: Reading
 
 <h3>2016</h3>
 <ul class="frontpage-list">
+    <li>Ready Player One</li>
+    <li>Red Notice</li>
+    <li>Nemisis Games</li>
     <li>Traction</li>
     <li>Sprint</li>
     <li>Chaos Monkeys</li>
