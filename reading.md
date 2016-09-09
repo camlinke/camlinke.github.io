@@ -5,6 +5,7 @@ title: Reading
 
 <h3>2016</h3>
 <ul class="frontpage-list">
+    <li>Making it Right: Product Management for a Startup World</li>
     <li>Ready Player One</li>
     <li>Red Notice</li>
     <li>Nemisis Games</li>
