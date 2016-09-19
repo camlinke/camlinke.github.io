@@ -5,6 +5,8 @@ title: Reading
 
 <h3>2016</h3>
 <ul class="frontpage-list">
+    <li>The Score Takes Care of Itself</li>
+    <li>Triggers</li>
     <li>Making it Right: Product Management for a Startup World</li>
     <li>Ready Player One</li>
     <li>Red Notice</li>
