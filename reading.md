@@ -5,6 +5,10 @@ title: Reading
 
 <h3>2016</h3>
 <ul class="frontpage-list">
+    <li>Rise of the Machines</li>
+    <li>Leap</li>
+    <li>The Pentagon's Brain</li>
+    <li>Breakthrough</li>
     <li>The Score Takes Care of Itself</li>
     <li>Triggers</li>
     <li>Making it Right: Product Management for a Startup World</li>
