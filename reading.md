@@ -5,6 +5,7 @@ title: Reading
 
 <h3>2016</h3>
 <ul class="frontpage-list">
+    <li>Bold</li>
     <li>Rise of the Machines</li>
     <li>Leap</li>
     <li>The Pentagon's Brain</li>
