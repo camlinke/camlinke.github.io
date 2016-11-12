@@ -5,6 +5,7 @@ title: Reading
 
 <h3>2016</h3>
 <ul class="frontpage-list">
+    <li>Are We Smart Enough to Know How Smart Animals Are?</li>
     <li>CTRL ALT Revolt!</li>
     <li>Bold</li>
     <li>Rise of the Machines</li>
