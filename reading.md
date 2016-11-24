@@ -5,6 +5,7 @@ title: Reading
 
 <h3>2016</h3>
 <ul class="frontpage-list">
+    <li>A Better World</li>
     <li>Bird by Bird</li>
     <li>Brilliance</li>
     <li>Are We Smart Enough to Know How Smart Animals Are?</li>
