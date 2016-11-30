@@ -5,6 +5,7 @@ title: Reading
 
 <h3>2016</h3>
 <ul class="frontpage-list">
+    <li>Predictably Irrational</li>
     <li>A Better World</li>
     <li>Bird by Bird</li>
     <li>Brilliance</li>
