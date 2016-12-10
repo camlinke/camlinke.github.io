@@ -5,6 +5,7 @@ title: Reading
 
 <h3>2016</h3>
 <ul class="frontpage-list">
+    <li>The Undoing Project</li>
     <li>Reinforcement Learning: An Introduction</li>
     <li>Written in Fire</li>
     <li>Predictably Irrational</li>
