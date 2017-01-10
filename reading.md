@@ -3,6 +3,11 @@ layout: page
 title: Reading 
 ---
 
+<h3>2017</h3>
+<ul class="frontpage-list">
+    <li>Shoe Dog</li>
+</ul>
+
 <h3>2016</h3>
 <ul class="frontpage-list">
     <li>True Names</li>
