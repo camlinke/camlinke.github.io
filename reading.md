@@ -5,6 +5,7 @@ title: Reading
 
 <h3>2017</h3>
 <ul class="frontpage-list">
+    <li>The Lifecycle of Software Objects</li>
     <li>The Inevitable</li>
     <li>Super Powereds: Year 1</li>
     <li>Shoe Dog</li>
