@@ -5,6 +5,7 @@ title: Reading
 
 <h3>2017</h3>
 <ul class="frontpage-list">
+    <li>Buffett</li>
     <li>Hypergrowth</li>
     <li>The Lifecycle of Software Objects</li>
     <li>The Inevitable</li>
