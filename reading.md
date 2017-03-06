@@ -5,6 +5,7 @@ title: Reading
 
 <h3>2017</h3>
 <ul class="frontpage-list">
+    <li>The Idea Factory</li>
     <li>Super Powereds: Year 3</li>
     <li>Self Driving</li>
     <li>Goodnight Smartphone</li>
