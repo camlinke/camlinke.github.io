@@ -5,6 +5,7 @@ title: Reading
 
 <h3>2017</h3>
 <ul class="frontpage-list">
+    <li>The Lies of Locke Lamora</li>
     <li>The Upstarts</li>
     <li>Stories of Your Life and Others</li>
     <li>Smarter</li>
