@@ -5,6 +5,7 @@ title: Reading
 
 <h3>2017</h3>
 <ul class="frontpage-list">
+    <li>Red Seas Under Red Skies</li>
     <li>Algorithms to Live By</li>
     <li>The Lies of Locke Lamora</li>
     <li>The Upstarts</li>
