@@ -5,6 +5,7 @@ title: Reading
 
 <h3>2017</h3>
 <ul class="frontpage-list">
+    <li>Play Bigger</li>
     <li>Change Agent</li>
     <li>Grit</li>
     <li>Red Seas Under Red Skies</li>
