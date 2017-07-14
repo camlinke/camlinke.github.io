@@ -5,6 +5,9 @@ title: Reading
 
 <h3>2017</h3>
 <ul class="frontpage-list">
+    <li>Run Program</li>
+    <li>To Pixar and Beyond</li>
+    <li>American Kingpin</li>
     <li>Play Bigger</li>
     <li>Change Agent</li>
     <li>Grit</li>
