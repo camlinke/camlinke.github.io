@@ -5,6 +5,10 @@ title: Reading
 
 <h3>2017</h3>
 <ul class="frontpage-list">
+    <li>Morning Star</li>
+    <li>Sapiens</li>
+    <li>Golden Son</li>
+    <li>Angel: How to Invest in Technology Startups</li>
     <li>Red Rising</li>
     <li>The Captain Class</li>
     <li>Run Program</li>
