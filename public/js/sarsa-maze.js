@@ -227,7 +227,7 @@
     if (!caption) return;
     var text = 'SARSA(λ) agent · episode ' + episode + ' · ' + steps + ' steps';
     if (lastSteps !== null) text += ' · last episode ' + lastSteps + ' · best ' + bestSteps;
-    caption.firstChild.nodeValue = text + ' · ';
+    caption.firstChild.nodeValue = text;
     toggle.textContent = running ? 'pause' : 'play';
   }
 
@@ -262,7 +262,14 @@
   var toggle = document.createElement('a');
   toggle.href = '#';
   toggle.addEventListener('click', function (ev) { ev.preventDefault(); setRunning(!running); });
-  if (caption) { caption.textContent = ''; caption.appendChild(document.createTextNode('')); caption.appendChild(toggle); }
+  // Stats on the first line, pause/play on its own line below so it stays put
+  // as the numbers change width.
+  if (caption) {
+    caption.textContent = '';
+    caption.appendChild(document.createTextNode(''));
+    caption.appendChild(document.createElement('br'));
+    caption.appendChild(toggle);
+  }
 
   makeMaze();
   resetAgent();
