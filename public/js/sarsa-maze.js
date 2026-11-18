@@ -19,6 +19,7 @@
   var LOOP_FRACTION = 0.06; // extra walls removed so the maze has loops
   var EPISODES_PER_MAZE = 40;
   var MAX_STEPS_PER_FRAME = 500;
+  var FAST_MIN_STEPS = 25;  // fast mode: at least this many steps per frame
 
   // Site palette (Poole theme / _sass/_base.scss)
   var COLOR = {
@@ -39,7 +40,7 @@
 
   var walls, Q, E, active, inActive, visited;
   var s, a, episode, steps, lastSteps, bestSteps;
-  var running = false, rafId = null;
+  var running = false, rafId = null, fast = false;
 
   // ---- Maze generation (randomized DFS + a few extra openings) -------------
   function makeMaze() {
@@ -229,6 +230,8 @@
     if (lastSteps !== null) text += ' · last episode ' + lastSteps + ' · best ' + bestSteps;
     caption.firstChild.nodeValue = text;
     toggle.textContent = running ? 'pause' : 'play';
+    regularLink.className = fast ? '' : 'is-current';
+    fastLink.className = fast ? 'is-current' : '';
   }
 
   // ---- Main loop ----------------------------------------------------------
@@ -238,6 +241,7 @@
     // random-walk episodes don't take minutes. Once it has learned a short
     // route, whole episodes play out at a watchable pace.
     var n = Math.min(MAX_STEPS_PER_FRAME, 1 + Math.floor(Math.pow(steps / 150, 1.5)));
+    if (fast) n = Math.max(n, FAST_MIN_STEPS);
     for (var k = 0; k < n; k++) {
       if (step()) {
         lastSteps = steps;
@@ -259,17 +263,55 @@
     updateCaption();
   }
 
-  var toggle = document.createElement('a');
-  toggle.href = '#';
-  toggle.addEventListener('click', function (ev) { ev.preventDefault(); setRunning(!running); });
-  // Stats on the first line, pause/play on its own line below so it stays put
-  // as the numbers change width.
+  function setFast(on) {
+    fast = on;
+    updateCaption();
+  }
+
+  // Click a cell to move the goal there. The old Q-values point at the old
+  // goal, so the agent starts learning again from scratch in the same maze.
+  function moveGoal(ev) {
+    var rect = canvas.getBoundingClientRect();
+    var size = rect.width / COLS;
+    var c = Math.floor((ev.clientX - rect.left) / size);
+    var r = Math.floor((ev.clientY - rect.top) / size);
+    if (r < 0 || r >= ROWS || c < 0 || c >= COLS) return;
+    var g = r * COLS + c;
+    if (g === START || g === GOAL) return;
+    GOAL = g;
+    resetAgent();
+    draw();
+    updateCaption();
+  }
+
+  function link(label, onClick) {
+    var el = document.createElement('a');
+    el.href = '#';
+    el.textContent = label;
+    el.addEventListener('click', function (ev) { ev.preventDefault(); onClick(); });
+    return el;
+  }
+
+  var toggle = link('pause', function () { setRunning(!running); });
+  var regularLink = link('regular', function () { setFast(false); });
+  var fastLink = link('fast', function () { setFast(true); });
+
+  // Stats on the first line, controls on their own line below so they stay
+  // put as the numbers change width.
   if (caption) {
     caption.textContent = '';
     caption.appendChild(document.createTextNode(''));
     caption.appendChild(document.createElement('br'));
     caption.appendChild(toggle);
+    caption.appendChild(document.createTextNode(' · '));
+    caption.appendChild(regularLink);
+    caption.appendChild(document.createTextNode(' / '));
+    caption.appendChild(fastLink);
+    caption.appendChild(document.createTextNode(' · click the maze to move the goal'));
   }
+
+  canvas.style.cursor = 'pointer';
+  canvas.addEventListener('click', moveGoal);
 
   makeMaze();
   resetAgent();

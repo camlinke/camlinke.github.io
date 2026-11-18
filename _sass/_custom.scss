@@ -26,6 +26,13 @@
     margin: .25rem 0 0;
     font-size: 75%;
     color: #9a9a9a;
+
+    a.is-current {
+        color: inherit;
+        font-weight: bold;
+        text-decoration: none;
+        cursor: default;
+    }
 }
 
 .frontpage-list {
