@@ -17,8 +17,12 @@
   var GOAL_REWARD = 1;      // reward on reaching the goal; every other step is 0
   var TRACE_MIN = 1e-3;     // traces below this are dropped
   var LOOP_FRACTION = 0.06; // extra walls removed so the maze has loops
-  var MAX_STEPS_PER_FRAME = 500;
-  var FAST_MIN_STEPS = 25;  // fast mode: at least this many steps per frame
+  // Agent steps per second for each speed: regular, fast (10x), fastest (100x).
+  var SPEEDS = [
+    { label: 'regular', rate: 2 },
+    { label: 'fast', rate: 20 },
+    { label: 'fastest', rate: 200 }
+  ];
 
   // Site palette (Poole theme / _sass/_base.scss)
   var COLOR = {
@@ -39,7 +43,7 @@
 
   var walls, Q, E, active, inActive, visited;
   var s, a, episode, steps, lastSteps, bestSteps;
-  var running = false, rafId = null, fast = false;
+  var running = false, rafId = null, speed = 0, pending = 0, lastTime = null;
 
   // ---- Maze generation (randomized DFS + a few extra openings) -------------
   function makeMaze() {
@@ -226,40 +230,41 @@
     if (lastSteps !== null) text += ' · last episode ' + lastSteps + ' · best ' + bestSteps;
     caption.firstChild.nodeValue = text;
     toggle.textContent = running ? 'pause' : 'play';
-    regularLink.className = fast ? '' : 'is-current';
-    fastLink.className = fast ? 'is-current' : '';
+    for (var i = 0; i < speedLinks.length; i++) {
+      speedLinks[i].className = i === speed ? 'is-current' : '';
+    }
   }
 
   // ---- Main loop ----------------------------------------------------------
-  function frame() {
-    // Every episode starts at one step per frame. If the agent is still lost
-    // after a while, speed up (to as much as MAX_STEPS_PER_FRAME) so the early
-    // random-walk episodes don't take minutes. Once it has learned a short
-    // route, whole episodes play out at a watchable pace.
-    var n = Math.min(MAX_STEPS_PER_FRAME, 1 + Math.floor(Math.pow(steps / 150, 1.5)));
-    if (fast) n = Math.max(n, FAST_MIN_STEPS);
+  // Steps happen at a fixed rate in real time: each frame takes however many
+  // steps are due since the last one (frame time capped so a backgrounded tab
+  // doesn't come back with a huge burst).
+  function frame(now) {
+    if (lastTime !== null) pending += Math.min(now - lastTime, 250) / 1000 * SPEEDS[speed].rate;
+    lastTime = now;
+    var n = Math.floor(pending);
+    pending -= n;
     for (var k = 0; k < n; k++) {
       if (step()) {
         lastSteps = steps;
         bestSteps = bestSteps === null ? steps : Math.min(bestSteps, steps);
         episode++;
         startEpisode();
-        break;
       }
     }
-    draw();
-    updateCaption();
+    if (n) { draw(); updateCaption(); }
     rafId = running ? requestAnimationFrame(frame) : null;
   }
 
   function setRunning(on) {
     running = on;
+    lastTime = null;
     if (on && rafId === null) rafId = requestAnimationFrame(frame);
     updateCaption();
   }
 
-  function setFast(on) {
-    fast = on;
+  function setSpeed(i) {
+    speed = i;
     updateCaption();
   }
 
@@ -299,8 +304,9 @@
 
   var toggle = link('pause', function () { setRunning(!running); });
   var restartLink = link('restart', restart);
-  var regularLink = link('regular', function () { setFast(false); });
-  var fastLink = link('fast', function () { setFast(true); });
+  var speedLinks = SPEEDS.map(function (sp, i) {
+    return link(sp.label, function () { setSpeed(i); });
+  });
 
   // Stats on the first line, controls on their own line below so they stay
   // put as the numbers change width.
@@ -312,9 +318,10 @@
     caption.appendChild(document.createTextNode(' · '));
     caption.appendChild(restartLink);
     caption.appendChild(document.createTextNode(' · '));
-    caption.appendChild(regularLink);
-    caption.appendChild(document.createTextNode(' / '));
-    caption.appendChild(fastLink);
+    speedLinks.forEach(function (el, i) {
+      if (i) caption.appendChild(document.createTextNode(' / '));
+      caption.appendChild(el);
+    });
     caption.appendChild(document.createTextNode(' · click the maze to move the goal'));
   }
 
