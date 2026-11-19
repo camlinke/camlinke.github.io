@@ -181,19 +181,16 @@
     ctx.fillRect(0, 0, W, H);
 
     // Explored cells get a faint grey; learned value V(s) = max_a Q(s,a)
-    // is shown as a green wash that spreads back from the goal.
-    var vmax = 0, i, v, q;
-    var V = new Float32Array(N);
-    for (i = 0; i < N; i++) {
-      v = 0;
-      for (q = 0; q < 4; q++) if (Q[i * 4 + q] > v) v = Q[i * 4 + q];
-      V[i] = v;
-      if (v > vmax) vmax = v;
-    }
+    // is shown as a green wash that spreads back from the goal. The shade is
+    // on a fixed scale (values can't exceed GOAL_REWARD), not relative to the
+    // current maximum, so values fading after the goal moves look like fading.
+    var i, v, q;
     for (i = 0; i < N; i++) {
       if (!visited[i]) continue;
-      ctx.fillStyle = V[i] > 0
-        ? 'rgba(' + COLOR.value + ',' + (0.06 + 0.3 * V[i] / vmax).toFixed(3) + ')'
+      v = 0;
+      for (q = 0; q < 4; q++) if (Q[i * 4 + q] > v) v = Q[i * 4 + q];
+      ctx.fillStyle = v > 0
+        ? 'rgba(' + COLOR.value + ',' + (0.06 + 0.3 * Math.min(1, v / GOAL_REWARD)).toFixed(3) + ')'
         : COLOR.explored;
       ctx.fillRect((i % COLS) * cell, ((i / COLS) | 0) * cell, cell, cell);
     }
