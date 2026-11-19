@@ -17,7 +17,6 @@
   var GOAL_REWARD = 1;      // reward on reaching the goal; every other step is 0
   var TRACE_MIN = 1e-3;     // traces below this are dropped
   var LOOP_FRACTION = 0.06; // extra walls removed so the maze has loops
-  var EPISODES_PER_MAZE = 40;
   var MAX_STEPS_PER_FRAME = 500;
   var FAST_MIN_STEPS = 25;  // fast mode: at least this many steps per frame
 
@@ -247,8 +246,7 @@
         lastSteps = steps;
         bestSteps = bestSteps === null ? steps : Math.min(bestSteps, steps);
         episode++;
-        if (episode > EPISODES_PER_MAZE) { makeMaze(); buildWallPath(); resetAgent(); }
-        else startEpisode();
+        startEpisode();
         break;
       }
     }
@@ -268,8 +266,9 @@
     updateCaption();
   }
 
-  // Click a cell to move the goal there. The old Q-values point at the old
-  // goal, so the agent starts learning again from scratch in the same maze.
+  // Click a cell to move the goal there. The agent keeps its Q-values and the
+  // current episode carries on: what it learned about the old goal only
+  // changes as it collects (or fails to collect) reward under the new one.
   function moveGoal(ev) {
     var rect = canvas.getBoundingClientRect();
     var size = rect.width / COLS;
@@ -279,7 +278,6 @@
     var g = r * COLS + c;
     if (g === START || g === GOAL) return;
     GOAL = g;
-    resetAgent();
     draw();
     updateCaption();
   }
@@ -292,7 +290,18 @@
     return el;
   }
 
+  // New maze, goal back in the corner, agent starts learning from scratch.
+  function restart() {
+    GOAL = N - 1;
+    makeMaze();
+    buildWallPath();
+    resetAgent();
+    draw();
+    updateCaption();
+  }
+
   var toggle = link('pause', function () { setRunning(!running); });
+  var restartLink = link('restart', restart);
   var regularLink = link('regular', function () { setFast(false); });
   var fastLink = link('fast', function () { setFast(true); });
 
@@ -303,6 +312,8 @@
     caption.appendChild(document.createTextNode(''));
     caption.appendChild(document.createElement('br'));
     caption.appendChild(toggle);
+    caption.appendChild(document.createTextNode(' · '));
+    caption.appendChild(restartLink);
     caption.appendChild(document.createTextNode(' · '));
     caption.appendChild(regularLink);
     caption.appendChild(document.createTextNode(' / '));
