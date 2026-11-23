@@ -17,6 +17,7 @@
   var GOAL_REWARD = 1;      // reward on reaching the goal; every other step is 0
   var TRACE_MIN = 1e-3;     // traces below this are dropped
   var LOOP_FRACTION = 0.06; // extra walls removed so the maze has loops
+  var MAX_FRAME_MS = 250;   // cap on catch-up time after a backgrounded tab
   // Agent steps per second for each speed: regular, fast (10x), fastest (100x).
   var SPEEDS = [
     { label: 'regular', rate: 2 },
@@ -28,50 +29,73 @@
   var COLOR = {
     bg: '#ffffff',
     wall: '#515151',
-    agent: '#268bd2',  // site link blue
-    goal: '#859900',   // solarized green, pairs with the link blue
+    agent: '#268bd2',     // site link blue
+    goal: '#859900',      // solarized green, pairs with the link blue
     trace: '38,139,210',  // agent blue as rgb, for eligibility-trace overlay
     value: '133,153,0',   // goal green as rgb, for learned-value overlay
     explored: '#f9f9f9'   // site's light table-stripe grey
   };
 
-  // Actions: N, E, S, W. Wall bits use the same order.
+  // Actions / directions: N, E, S, W. Wall bits use the same order.
+  var NORTH = 0, EAST = 1, SOUTH = 2, WEST = 3;
   var DR = [-1, 0, 1, 0], DC = [0, 1, 0, -1];
-  var WALL = [1, 2, 4, 8], OPP = [2, 3, 0, 1];
+  var WALL = [1, 2, 4, 8], OPP = [SOUTH, WEST, NORTH, EAST];
+  var ALL_WALLS = 15;
 
-  var START = 0, GOAL = N - 1;
+  var START = 0, DEFAULT_GOAL = N - 1;
 
-  var walls, Q, E, active, inActive, visited;
+  // ---- State --------------------------------------------------------------
+  var walls, goal;                         // environment
+  var Q, E, active, inActive, visited;     // learner (E is sparse via `active`)
   var s, a, episode, steps, lastSteps, bestSteps;
   var running = false, rafId = null, speed = 0, pending = 0, lastTime = null;
 
+  // ---- Grid helpers -------------------------------------------------------
+  function rowOf(i) { return (i / COLS) | 0; }
+  function colOf(i) { return i % COLS; }
+  function inBounds(r, c) { return r >= 0 && r < ROWS && c >= 0 && c < COLS; }
+
+  // Neighbouring cell in direction d, or -1 if off the grid.
+  function neighbour(i, d) {
+    var r = rowOf(i) + DR[d], c = colOf(i) + DC[d];
+    return inBounds(r, c) ? r * COLS + c : -1;
+  }
+
+  // Remove the wall between cell i and its neighbour j in direction d.
+  function carve(i, j, d) {
+    walls[i] &= ~WALL[d];
+    walls[j] &= ~WALL[OPP[d]];
+  }
+
+  function randInt(n) { return (Math.random() * n) | 0; }
+
   // ---- Maze generation (randomized DFS + a few extra openings) -------------
   function makeMaze() {
-    walls = new Uint8Array(N).fill(15);
-    var seen = new Uint8Array(N), stack = [START];
+    walls = new Uint8Array(N).fill(ALL_WALLS);
+    var seen = new Uint8Array(N), stack = [START], d, j;
     seen[START] = 1;
     while (stack.length) {
-      var cur = stack[stack.length - 1];
-      var r = (cur / COLS) | 0, c = cur % COLS, opts = [];
-      for (var d = 0; d < 4; d++) {
-        var nr = r + DR[d], nc = c + DC[d];
-        if (nr >= 0 && nr < ROWS && nc >= 0 && nc < COLS && !seen[nr * COLS + nc]) opts.push(d);
+      var cur = stack[stack.length - 1], opts = [];
+      for (d = 0; d < 4; d++) {
+        j = neighbour(cur, d);
+        if (j >= 0 && !seen[j]) opts.push(d);
       }
       if (!opts.length) { stack.pop(); continue; }
-      var dir = opts[(Math.random() * opts.length) | 0];
-      var nxt = (r + DR[dir]) * COLS + (c + DC[dir]);
-      walls[cur] &= ~WALL[dir];
-      walls[nxt] &= ~WALL[OPP[dir]];
-      seen[nxt] = 1;
-      stack.push(nxt);
+      d = opts[randInt(opts.length)];
+      j = neighbour(cur, d);
+      carve(cur, j, d);
+      seen[j] = 1;
+      stack.push(j);
     }
+
+    // Knock out extra interior walls so there's more than one route.
     var toOpen = Math.floor(N * LOOP_FRACTION);
     while (toOpen > 0) {
-      var cell = (Math.random() * N) | 0, dd = (Math.random() * 4) | 0;
-      var rr = ((cell / COLS) | 0) + DR[dd], cc = (cell % COLS) + DC[dd];
-      if (rr < 0 || rr >= ROWS || cc < 0 || cc >= COLS || !(walls[cell] & WALL[dd])) continue;
-      walls[cell] &= ~WALL[dd];
-      walls[rr * COLS + cc] &= ~WALL[OPP[dd]];
+      var i = randInt(N);
+      d = randInt(4);
+      j = neighbour(i, d);
+      if (j < 0 || !(walls[i] & WALL[d])) continue;
+      carve(i, j, d);
       toOpen--;
     }
   }
@@ -94,7 +118,13 @@
   }
 
   function policy(state) {
-    return Math.random() < EPSILON ? (Math.random() * 4) | 0 : greedy(state);
+    return Math.random() < EPSILON ? randInt(4) : greedy(state);
+  }
+
+  function maxQ(state) {
+    var base = state * 4, v = 0;
+    for (var i = 0; i < 4; i++) if (Q[base + i] > v) v = Q[base + i];
+    return v;
   }
 
   function clearTraces() {
@@ -110,6 +140,13 @@
     visited[s] = 1;
   }
 
+  function endEpisode() {
+    lastSteps = steps;
+    bestSteps = bestSteps === null ? steps : Math.min(bestSteps, steps);
+    episode++;
+    startEpisode();
+  }
+
   function resetAgent() {
     Q = new Float32Array(N * 4);   // zero init: neutral, so the agent explores until it finds reward
     E = new Float32Array(N * 4);
@@ -123,10 +160,9 @@
   // One SARSA(lambda) transition. Returns true when the episode ends.
   function step() {
     var s2 = move(s, a), sa = s * 4 + a;
-    var terminal = s2 === GOAL;
-    var r = terminal ? GOAL_REWARD : 0;
+    var terminal = s2 === goal;
     var a2 = terminal ? 0 : policy(s2);
-    var target = terminal ? r : r + GAMMA * Q[s2 * 4 + a2];
+    var target = terminal ? GOAL_REWARD : GAMMA * Q[s2 * 4 + a2];  // r = 0 on non-terminal steps
     var delta = target - Q[sa];
 
     // Replacing traces: zero other actions in s, set e(s,a) = 1.
@@ -134,6 +170,7 @@
     E[sa] = 1;
     if (!inActive[sa]) { inActive[sa] = 1; active.push(sa); }
 
+    // Update every traced pair, decay its trace, and drop the ones that fade out.
     var decay = GAMMA * LAMBDA, keep = 0;
     for (var j = 0; j < active.length; j++) {
       var idx = active[j];
@@ -151,15 +188,15 @@
   }
 
   // ---- Rendering ----------------------------------------------------------
-  var cell = 10, wallPath = null, lastWidth = 0;
+  var cellSize = 10, wallPath = null, lastWidth = 0;
 
   function resize() {
     var w = canvas.parentNode.clientWidth;
-    var dpr = window.devicePixelRatio || 1;
     if (w === lastWidth || w === 0) return;  // height changes re-trigger the observer
     lastWidth = w;
-    cell = w / COLS;
-    var h = Math.round(cell * ROWS);
+    var dpr = window.devicePixelRatio || 1;
+    cellSize = w / COLS;
+    var h = Math.round(cellSize * ROWS);
     canvas.style.height = h + 'px';
     canvas.width = Math.round(w * dpr);
     canvas.height = Math.round(h * dpr);
@@ -168,71 +205,106 @@
     draw();
   }
 
+  // Each cell draws its north and west walls; the east and south edges of the
+  // grid are drawn by the cells along them.
   function buildWallPath() {
     wallPath = new Path2D();
+    function seg(x1, y1, x2, y2) { wallPath.moveTo(x1, y1); wallPath.lineTo(x2, y2); }
     for (var i = 0; i < N; i++) {
-      var x = (i % COLS) * cell, y = ((i / COLS) | 0) * cell, w = walls[i];
-      if (w & 1) { wallPath.moveTo(x, y); wallPath.lineTo(x + cell, y); }
-      if (w & 8) { wallPath.moveTo(x, y); wallPath.lineTo(x, y + cell); }
-      if ((w & 2) && i % COLS === COLS - 1) { wallPath.moveTo(x + cell, y); wallPath.lineTo(x + cell, y + cell); }
-      if ((w & 4) && ((i / COLS) | 0) === ROWS - 1) { wallPath.moveTo(x, y + cell); wallPath.lineTo(x + cell, y + cell); }
+      var x = colOf(i) * cellSize, y = rowOf(i) * cellSize, w = walls[i];
+      var x2 = x + cellSize, y2 = y + cellSize;
+      if (w & WALL[NORTH]) seg(x, y, x2, y);
+      if (w & WALL[WEST]) seg(x, y, x, y2);
+      if ((w & WALL[EAST]) && colOf(i) === COLS - 1) seg(x2, y, x2, y2);
+      if ((w & WALL[SOUTH]) && rowOf(i) === ROWS - 1) seg(x, y2, x2, y2);
     }
   }
 
+  function fillCell(i, style, pad) {
+    pad = pad || 0;
+    ctx.fillStyle = style;
+    ctx.fillRect(colOf(i) * cellSize + pad, rowOf(i) * cellSize + pad,
+                 cellSize - 2 * pad, cellSize - 2 * pad);
+  }
+
+  function rgba(rgb, alpha) { return 'rgba(' + rgb + ',' + alpha.toFixed(3) + ')'; }
+
   function draw() {
-    var W = cell * COLS, H = cell * ROWS;
     ctx.fillStyle = COLOR.bg;
-    ctx.fillRect(0, 0, W, H);
+    ctx.fillRect(0, 0, cellSize * COLS, cellSize * ROWS);
 
     // Explored cells get a faint grey; learned value V(s) = max_a Q(s,a)
     // is shown as a green wash that spreads back from the goal. The shade is
     // on a fixed scale (values can't exceed GOAL_REWARD), not relative to the
     // current maximum, so values fading after the goal moves look like fading.
-    var i, v, q;
+    var i;
     for (i = 0; i < N; i++) {
       if (!visited[i]) continue;
-      v = 0;
-      for (q = 0; q < 4; q++) if (Q[i * 4 + q] > v) v = Q[i * 4 + q];
-      ctx.fillStyle = v > 0
-        ? 'rgba(' + COLOR.value + ',' + (0.06 + 0.3 * Math.min(1, v / GOAL_REWARD)).toFixed(3) + ')'
-        : COLOR.explored;
-      ctx.fillRect((i % COLS) * cell, ((i / COLS) | 0) * cell, cell, cell);
+      var v = maxQ(i);
+      fillCell(i, v > 0 ? rgba(COLOR.value, 0.06 + 0.3 * Math.min(1, v / GOAL_REWARD)) : COLOR.explored);
     }
 
     // Eligibility traces, shown as a blue tail behind the agent.
     for (i = 0; i < active.length; i++) {
-      var st = (active[i] / 4) | 0;
-      ctx.fillStyle = 'rgba(' + COLOR.trace + ',' + (0.35 * E[active[i]]).toFixed(3) + ')';
-      ctx.fillRect((st % COLS) * cell, ((st / COLS) | 0) * cell, cell, cell);
+      fillCell((active[i] / 4) | 0, rgba(COLOR.trace, 0.35 * E[active[i]]));
     }
 
-    // Goal
-    var pad = cell * 0.15;
-    ctx.fillStyle = COLOR.goal;
-    ctx.fillRect((GOAL % COLS) * cell + pad, ((GOAL / COLS) | 0) * cell + pad, cell - 2 * pad, cell - 2 * pad);
+    fillCell(goal, COLOR.goal, cellSize * 0.15);
 
-    // Walls
     ctx.strokeStyle = COLOR.wall;
-    ctx.lineWidth = Math.max(1, cell * 0.12);
+    ctx.lineWidth = Math.max(1, cellSize * 0.12);
     ctx.lineCap = 'square';
     ctx.stroke(wallPath);
 
-    // Agent
     ctx.fillStyle = COLOR.agent;
     ctx.beginPath();
-    ctx.arc((s % COLS + 0.5) * cell, (((s / COLS) | 0) + 0.5) * cell, cell * 0.33, 0, Math.PI * 2);
+    ctx.arc((colOf(s) + 0.5) * cellSize, (rowOf(s) + 0.5) * cellSize, cellSize * 0.33, 0, Math.PI * 2);
     ctx.fill();
+  }
+
+  // ---- Caption & controls -------------------------------------------------
+  var stats, toggle, speedLinks = [];
+
+  function link(label, onClick) {
+    var el = document.createElement('a');
+    el.href = '#';
+    el.textContent = label;
+    el.addEventListener('click', function (ev) { ev.preventDefault(); onClick(); });
+    return el;
+  }
+
+  // Stats on the first line, controls on their own line below so they stay
+  // put as the numbers change width.
+  function buildCaption() {
+    if (!caption) return;
+    stats = document.createTextNode('');
+    toggle = link('pause', function () { setRunning(!running); });
+    speedLinks = SPEEDS.map(function (sp, i) {
+      return link(sp.label, function () { setSpeed(i); });
+    });
+
+    var parts = [stats, document.createElement('br'), toggle, ' · ', link('restart', restart), ' · '];
+    speedLinks.forEach(function (el, i) { if (i) parts.push(' / '); parts.push(el); });
+    parts.push(' · click the maze to move the goal');
+
+    caption.textContent = '';
+    parts.forEach(function (p) {
+      caption.appendChild(typeof p === 'string' ? document.createTextNode(p) : p);
+    });
   }
 
   function updateCaption() {
     if (!caption) return;
     var text = 'SARSA(λ) agent · episode ' + episode + ' · ' + steps + ' steps';
     if (lastSteps !== null) text += ' · last episode ' + lastSteps + ' · best ' + bestSteps;
-    caption.firstChild.nodeValue = text;
+    stats.nodeValue = text;
     toggle.textContent = running ? 'pause' : 'play';
-    for (var i = 0; i < speedLinks.length; i++) {
-      speedLinks[i].className = i === speed ? 'is-current' : '';
-    }
+    speedLinks.forEach(function (el, i) { el.className = i === speed ? 'is-current' : ''; });
+  }
+
+  function render() {
+    draw();
+    updateCaption();
   }
 
   // ---- Main loop ----------------------------------------------------------
@@ -240,19 +312,12 @@
   // steps are due since the last one (frame time capped so a backgrounded tab
   // doesn't come back with a huge burst).
   function frame(now) {
-    if (lastTime !== null) pending += Math.min(now - lastTime, 250) / 1000 * SPEEDS[speed].rate;
+    if (lastTime !== null) pending += Math.min(now - lastTime, MAX_FRAME_MS) / 1000 * SPEEDS[speed].rate;
     lastTime = now;
     var n = Math.floor(pending);
     pending -= n;
-    for (var k = 0; k < n; k++) {
-      if (step()) {
-        lastSteps = steps;
-        bestSteps = bestSteps === null ? steps : Math.min(bestSteps, steps);
-        episode++;
-        startEpisode();
-      }
-    }
-    if (n) { draw(); updateCaption(); }
+    for (var k = 0; k < n; k++) if (step()) endEpisode();
+    if (n) render();
     rafId = running ? requestAnimationFrame(frame) : null;
   }
 
@@ -268,68 +333,44 @@
     updateCaption();
   }
 
+  // ---- Interaction --------------------------------------------------------
+  function cellAt(ev) {
+    var rect = canvas.getBoundingClientRect();
+    var size = rect.width / COLS;
+    var r = Math.floor((ev.clientY - rect.top) / size);
+    var c = Math.floor((ev.clientX - rect.left) / size);
+    return inBounds(r, c) ? r * COLS + c : -1;
+  }
+
   // Click a cell to move the goal there. The agent keeps its Q-values and the
   // current episode carries on: what it learned about the old goal only
   // changes as it collects (or fails to collect) reward under the new one.
   function moveGoal(ev) {
-    var rect = canvas.getBoundingClientRect();
-    var size = rect.width / COLS;
-    var c = Math.floor((ev.clientX - rect.left) / size);
-    var r = Math.floor((ev.clientY - rect.top) / size);
-    if (r < 0 || r >= ROWS || c < 0 || c >= COLS) return;
-    var g = r * COLS + c;
-    if (g === START || g === GOAL) return;
-    GOAL = g;
-    draw();
-    updateCaption();
+    var g = cellAt(ev);
+    if (g < 0 || g === START || g === goal) return;
+    goal = g;
+    render();
   }
 
-  function link(label, onClick) {
-    var el = document.createElement('a');
-    el.href = '#';
-    el.textContent = label;
-    el.addEventListener('click', function (ev) { ev.preventDefault(); onClick(); });
-    return el;
-  }
-
-  // New maze, goal back in the corner, agent starts learning from scratch.
-  function restart() {
-    GOAL = N - 1;
+  // New maze, goal back in the corner, agent learning from scratch.
+  function newWorld() {
+    goal = DEFAULT_GOAL;
     makeMaze();
-    buildWallPath();
     resetAgent();
-    draw();
-    updateCaption();
   }
 
-  var toggle = link('pause', function () { setRunning(!running); });
-  var restartLink = link('restart', restart);
-  var speedLinks = SPEEDS.map(function (sp, i) {
-    return link(sp.label, function () { setSpeed(i); });
-  });
-
-  // Stats on the first line, controls on their own line below so they stay
-  // put as the numbers change width.
-  if (caption) {
-    caption.textContent = '';
-    caption.appendChild(document.createTextNode(''));
-    caption.appendChild(document.createElement('br'));
-    caption.appendChild(toggle);
-    caption.appendChild(document.createTextNode(' · '));
-    caption.appendChild(restartLink);
-    caption.appendChild(document.createTextNode(' · '));
-    speedLinks.forEach(function (el, i) {
-      if (i) caption.appendChild(document.createTextNode(' / '));
-      caption.appendChild(el);
-    });
-    caption.appendChild(document.createTextNode(' · click the maze to move the goal'));
+  function restart() {
+    newWorld();
+    buildWallPath();
+    render();
   }
 
+  // ---- Init ---------------------------------------------------------------
+  buildCaption();
   canvas.style.cursor = 'pointer';
   canvas.addEventListener('click', moveGoal);
 
-  makeMaze();
-  resetAgent();
+  newWorld();
   resize();
   if (window.ResizeObserver) new ResizeObserver(resize).observe(canvas.parentNode);
   else window.addEventListener('resize', resize);
