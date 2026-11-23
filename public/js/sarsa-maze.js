@@ -18,9 +18,9 @@
   var TRACE_MIN = 1e-3;     // traces below this are dropped
   var LOOP_FRACTION = 0.06; // extra walls removed so the maze has loops
   var MAX_FRAME_MS = 250;   // cap on catch-up time after a backgrounded tab
-  // Agent steps per second for each speed: regular, fast (10x), fastest (100x).
+  // Agent steps per second for each speed.
   var SPEEDS = [
-    { label: 'regular', rate: 2 },
+    { label: 'regular', rate: 10 },
     { label: 'fast', rate: 20 },
     { label: 'fastest', rate: 200 }
   ];
